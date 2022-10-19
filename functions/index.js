@@ -3,10 +3,13 @@ const admin = require("firebase-admin");
 const firebase = require("firebase");
 require('firebase/auth');
 const serviceAccount = require("../service_account.json");
-
+const { config } = require('./config')
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
+
+firebase.initializeApp(config);
+
 
 const email = "blakewoodjr84@gmail.com";
 const password = "qwerty";

@@ -70,3 +70,5 @@ service_account.json
 emulator.json
 
 functions/node_modules
+
+functions/config.js
