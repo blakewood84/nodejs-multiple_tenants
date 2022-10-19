@@ -5,7 +5,8 @@ require('firebase/auth');
 const serviceAccount = require("../service_account.json");
 const { config } = require('./config')
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
+  // serviceAccountId: '334013474211-v6drqrad3vrj0l0qa8v8rnrhcbf4t53t.apps.googleusercontent.com@tenancy-test-a49bb.iam.gserviceaccount.com'
 });
 
 firebase.initializeApp(config);
@@ -44,7 +45,8 @@ exports.authenticateUser = functions.https.onRequest((request, response) => {
     const uid = userCredential.user.uid;
     admin.auth().createCustomToken(uid).then((customToken) => {
       console.log('CUSTOM TOKEN: ', customToken);
+      response.send(customToken);
     })
   });
-  response.send('Authenticate!');
+  
 });
