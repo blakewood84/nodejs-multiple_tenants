@@ -1,11 +1,47 @@
 const functions = require("firebase-functions");
-const admin = required("firebase-admin");
-admin.initializeApp();
+const admin = require("firebase-admin");
+const firebase = require("firebase");
+require('firebase/auth');
+const serviceAccount = require("../service_account.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const email = "blakewoodjr84@gmail.com";
+const password = "qwerty";
+const tenantId = "first-tenant-95cpf";
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
 exports.helloWorld = functions.https.onRequest((request, response) => {
   functions.logger.info("Hello logs!", { structuredData: true });
-  response.send("Hello from Firebase!");
+  let list = [];
+  const tenantManager = admin
+    .auth()
+    .tenantManager()
+    .listTenants(100)
+    .then((result) => {
+      result.tenants.forEach((tenant) => {
+        list.push(tenant.toJSON());
+        console.log(tenant.toJSON());
+      });
+    });
+
+  response.send("BOOM SHAKA!");
+});
+
+exports.authenticateUser = functions.https.onRequest((request, response) => {
+  const auth = firebase.auth();
+  auth.tenantId = tenantId;
+  auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
+    console.log('success!');
+    console.log(userCredential.user.uid);
+    const uid = userCredential.user.uid;
+    admin.auth().createCustomToken(uid).then((customToken) => {
+      console.log('CUSTOM TOKEN: ', customToken);
+    })
+  });
+  response.send('Authenticate!');
 });
